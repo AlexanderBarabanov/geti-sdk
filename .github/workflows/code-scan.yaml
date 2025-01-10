@@ -37,36 +37,34 @@ jobs:
         scan-type: fs
         scan-ref: trivy_input
         scanners: vuln
-        output: trivy-report-vuln.txt
+        output: trivy-results-vuln.txt
 
     - name: Run Trivy Scan (dockerfile and secrets)
       uses: aquasecurity/trivy-action@0.29.0
+      if: always()
       with:
         scan-type: fs
         scan-ref: .
         scanners: misconfig,secret
-        output: trivy-report-misconfig.txt
+        output: trivy-results-misconfig.txt
         skip-setup-trivy: true
 
     - name: Upload Trivy results
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: trivy-vuln-report
-        path: '${{ github.workspace }}/trivy-report-*'
-        retention-days: 1
-      # Use always() to always run this step to publish scan results when there are test failures
-      if: ${{ always() }}
+        name: trivy-results
+        path: '${{ github.workspace }}/trivy-results-*'
+        retention-days: 7
 
     - name: Upload deps list
       uses: actions/upload-artifact@v4
       with:
         name: python-deps-list
         path: '${{ github.workspace }}/trivy_input'
-        retention-days: 1
-      # Use always() to always run this step to publish scan results when there are test failures
-      if: ${{ always() }}
+        retention-days: 7
 
-  Bandit:
+  Bandit-all:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -77,17 +75,30 @@ jobs:
           python-version: "3.10"
       - name: Install Bandit
         run: pip install bandit
-      - name: Bandit scan
-        run: bandit -r --ini tox.ini . -f txt -o bandit-scan-results.txt
+      - name: Bandit scan (report)
+        run: bandit --ini tox.ini -f html -o bandit-results.html -r --exit-zero . # report generation only
       - name: Upload Bandit artifact
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        if: always()
         with:
-          name: bandit-scan-results
-          path: bandit-scan-results.txt
-          retention-days: 1
-        # Use always() to always run this step to publish scan results when there are test failures
-        if: ${{ always() }}
-    
+          name: bandit-results
+          path: bandit-results.txt
+          retention-days: 7
+
+  Bandit-high:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.10"
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Bandit scan (high severity)
+        run: bandit --ini tox.ini -r -lll . 
+
   CodeQL:
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-22.04
@@ -100,6 +111,8 @@ jobs:
       matrix:
         include:
         - language: python
+          build-mode: none
+        - language: actions # to scan workflows
           build-mode: none
     steps:
     - name: Checkout repository
@@ -123,9 +136,36 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         template: report
         
-
     - name: Upload Report
       uses: actions/upload-artifact@v4
       with:
-        name: codeql-report
+        name: codeql-results
         path: "./report.pdf"
+        retention-days: 7
+
+
+  Summarize:
+    runs-on: ubuntu-22.04
+    steps:
+
+      # Create directory first
+      - name: Create results directory
+        run: mkdir -p all-results
+
+      # Download artifacts with error handling
+      - name: Download all results
+        uses: actions/download-artifact@v4
+        continue-on-error: true # Don't fail if some tools didn't generate results
+        with:
+          pattern: "*-results"
+          merge-multiple: true
+          path: all-results
+          
+      # Only upload if there are files
+      - name: Upload combined results
+        if: hashFiles('all-results/**/*') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-results
+          path: all-results
+          retention-days: 7
