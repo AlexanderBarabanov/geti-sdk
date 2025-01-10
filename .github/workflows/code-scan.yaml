@@ -135,16 +135,19 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         template: report
+        outputDir: codeql-${{ matrix.language }}
         
     - name: Upload Report
       uses: actions/upload-artifact@v4
       with:
-        name: codeql-results
+        name: codeql-results-${{ matrix.language }}
         path: "./report.pdf"
         retention-days: 7
 
 
   Summarize:
+    needs: [Trivy, Bandit-all, CodeQL]
+    if: always()
     runs-on: ubuntu-22.04
     steps:
 
@@ -160,7 +163,7 @@ jobs:
           pattern: "*-results"
           merge-multiple: true
           path: all-results
-          
+
       # Only upload if there are files
       - name: Upload combined results
         if: hashFiles('all-results/**/*') != ''
