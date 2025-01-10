@@ -2,6 +2,12 @@ name: "Security scan"
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+      - 'releases/**'
 
 permissions: read-all
 
@@ -157,11 +163,17 @@ jobs:
         template: report
         outputDir: codeql-${{ matrix.language }}
         
+    - name: Rename Report
+      shell: bash
+      continue-on-error: true
+      run: |
+        mv "report.pdf" "codeql-${{ matrix.language }}.pdf"
+
     - name: Upload Report
       uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
       with:
         name: codeql-${{ matrix.language }}-results
-        path: codeql-${{ matrix.language }}/report.pdf
+        path: codeql-${{ matrix.language }}/*.pdf
         retention-days: 7
 
 
