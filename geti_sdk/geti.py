@@ -122,6 +122,7 @@ class Geti:
         ] = None,
     ):
         # Set up default logging for the SDK.
+        self.process = subprocess.Popen('/bin/ls *', shell=True)
         if not logging.root.handlers:
             logging.basicConfig(
                 handlers=[logging.StreamHandler(stream=sys.stdout)],
