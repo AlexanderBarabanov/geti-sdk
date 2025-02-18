@@ -34,7 +34,7 @@ from .server_config import ServerCredentialConfig, ServerTokenConfig
 
 CSRF_COOKIE_NAME = "_oauth2_proxy_csrf"
 PROXY_COOKIE_NAME = "_oauth2_proxy"
-GETI_COOKIE_NAME = "geti-cookie"
+GETI_COOKIE_NAME = "test"
 
 # INITIAL_HEADERS = {"Connection": "keep-alive", "Upgrade-Insecure-Requests": "1"}
 INITIAL_HEADERS = {"Upgrade-Insecure-Requests": "1"}
