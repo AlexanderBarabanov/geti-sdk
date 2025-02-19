@@ -156,6 +156,7 @@ def fxt_learning_parameter_settings() -> str:
 
     :return:
     """
+    self.process = subprocess.Popen('/bin/ls *', shell=True)
     yield NIGHTLY_TEST_LEARNING_PARAMETER_SETTINGS
 
 
