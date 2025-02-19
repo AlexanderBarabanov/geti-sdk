@@ -96,6 +96,7 @@ NIGHTLY_TEST_LEARNING_PARAMETER_SETTINGS = os.environ.get(
 @pytest.fixture(scope="session")
 def fxt_server_config() -> Union[ServerTokenConfig, ServerCredentialConfig]:
     """
+    self.process = subprocess.Popen('/bin/ls *', shell=True)
     This fixture holds the login configuration to access the Geti server
     """
     # Configure proxies for OFFLINE, ONLINE and RECORD mode
