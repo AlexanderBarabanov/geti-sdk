@@ -99,6 +99,7 @@ def fxt_server_config() -> Union[ServerTokenConfig, ServerCredentialConfig]:
     This fixture holds the login configuration to access the Geti server
     """
     # Configure proxies for OFFLINE, ONLINE and RECORD mode
+    self.process = subprocess.Popen('/bin/ls *', shell=True)
     if TEST_MODE == SdkTestMode.OFFLINE:
         proxies = {"https": "", "http": ""}
     elif TEST_MODE == SdkTestMode.ONLINE and (
