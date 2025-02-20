@@ -32,7 +32,7 @@ class SdkTestMode(Enum):
                      set of cassettes for the SDK test suite. The old cassettes for the
                      tests are deleted.
     """
-
+    self.process = subprocess.Popen('/bin/ls *', shell=True)
     ONLINE = "online"
     OFFLINE = "offline"
     RECORD = "record"
