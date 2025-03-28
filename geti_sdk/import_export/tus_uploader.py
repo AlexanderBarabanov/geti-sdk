@@ -25,6 +25,7 @@ class TUSUploader:
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         retries: int = 0,
         retry_delay: int = 30,
+        retry_delay2: int = 30,
     ):
         """
         Initialize TUSUploader instance.
