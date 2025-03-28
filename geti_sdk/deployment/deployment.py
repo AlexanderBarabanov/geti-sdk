@@ -20,6 +20,7 @@ from collections.abc import Sequence
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import attr
+import test
 import numpy as np
 from model_api.models import Model as OMZModel
 
