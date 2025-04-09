@@ -1,0 +1,6 @@
+[submodule "3rd-party/datumaro"]
+	path = 3rd-party/datumaro
+	url = https://github.com/AlexanderBarabanov/datumaro.git
+[submodule "3rd-party/anomalib"]
+	path = 3rd-party/anomalib
+	url = https://github.com/AlexanderBarabanov/anomalib
