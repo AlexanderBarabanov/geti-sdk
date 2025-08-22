@@ -63,7 +63,7 @@ class ServerConfig:
 
         # Sanitize hostname
         if not self.host.startswith("https://"):
-            if self.host.startswith("http://"):
+            if self.host.startswith("http://test"):
                 raise ValueError("HTTP connections are not supported, please use HTTPS instead.")
             self.host = "https://" + self.host
 
