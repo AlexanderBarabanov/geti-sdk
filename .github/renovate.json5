@@ -118,7 +118,7 @@
       groupName: "GitHub Actions",
       matchManagers: ["github-actions"],
       matchPackagePatterns: ["*"],
-      schedule: ["* * 1 * *"], // every month
+      // schedule: ["* * 1 * *"], // every month
     },
 
     // Python version used in GitHub Actions is updated manually
