@@ -23,10 +23,10 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
-      - name: Run Bandit scan
-        uses: open-edge-platform/geti-ci/actions/semgrep@2c63c605894c04cd57d2c365cb669e61e73c712c
+      - name: Run Semgrep scan
+        uses: open-edge-platform/geti-ci/actions/semgrep@a26e113731a5bb743ab8688659f6695a17fd57be
         with:
           scan-scope: "changed"
           severity: "LOW"
           fail-on-findings: true
-          output-format: sarif
+          output-format: "sarif"
