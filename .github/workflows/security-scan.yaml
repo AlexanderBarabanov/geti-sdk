@@ -32,6 +32,6 @@ jobs:
         uses: open-edge-platform/geti-ci/actions/semgrep@22a851032759d135dc75dd1315f833fc465951f4
         with:
           scan-scope: "all"
-          output-format: "sarif"
+          output-format: "text"
           severity: "LOW"
           fail-on-findings: false # reports only
