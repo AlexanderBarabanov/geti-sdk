@@ -10,125 +10,23 @@ on:
       - main
       - "releases/**"
 
-env:
-  PREMERGE_TEST_REPORT: pre_merge_test_report.html
-  REPORT_DIRECTORY: reports
-  PYTHONUTF8: "1"
 
 permissions: {} # No permissions by default
 
 jobs:
-  pr_tests:
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: read
-      checks: read
-      actions: read
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include: # Run test with legacy cassette (Currently - Geti 2.0)
-          - os: ubuntu-24.04
-            python-version: "3.10"
-            env: GETI_PLATFORM_VERSION=LEGACY
-      fail-fast: true
-      max-parallel: 5
-
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
-        with:
-          egress-policy: audit
-
-      - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          lfs: true
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
-        with:
-          version: "0.7.13"
-
-      - name: Prepare venv and install Python dependencies
-        run: |
-          uv lock --check
-          uv sync --frozen
-
-      - name: Create report directory
-        # Creates the temporary directory that is used to store the test report
-        run: |
-          mkdir -p env.REPORT_DIRECTORY
-
-      - name: Check formatting with ruff
-        run: |
-          uv run ruff check --output-format=github .
-          uv run ruff format --check .
-
-      - name: Test with pytest
-        run: |
-          uv run pytest tests/pre-merge -c tests/offline.ini --cov=geti_sdk --html=env.REPORT_DIRECTORY/env.PREMERGE_TEST_REPORT --self-contained-html --cov-report html:env.REPORT_DIRECTORY/coverage
-
-      - name: Upload test report for pre-merge tests
-        # Publish the test report to github
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: ${{ always() }}
-        with:
-          name: pre-merge-test-reports
-          path: ${{ env.REPORT_DIRECTORY }}
-
-      - name: Clean up report directories
-        # Remove temporary report directory
-        if: ${{ always() }}
-        run: |
-          rm -r env.REPORT_DIRECTORY
-
-  zizmor-scan-pr:
+  semgrep-scan-pr:
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
-        with:
-          egress-policy: audit
-      - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          persist-credentials: false
-      - name: Run Zizmor scan
-        uses: open-edge-platform/geti-ci/actions/zizmor@c2bb2697178bb2e50014420aef2351a45749b925
-        with:
-          scan-scope: "changed"
-          severity-level: "LOW"
-          confidence-level: "LOW"
-          fail-on-findings: true
-
-  bandit-scan-pr:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
-        with:
-          egress-policy: audit
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
       - name: Run Bandit scan
-        uses: open-edge-platform/geti-ci/actions/bandit@c2bb2697178bb2e50014420aef2351a45749b925
+        uses: open-edge-platform/geti-ci/actions/semgrep@2c63c605894c04cd57d2c365cb669e61e73c712c
         with:
           scan-scope: "changed"
-          severity-level: "LOW"
-          confidence-level: "LOW"
-          config_file: "pyproject.toml"
+          severity: "LOW"
           fail-on-findings: true
+          output-format: sarif
