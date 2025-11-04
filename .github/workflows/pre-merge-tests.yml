@@ -24,7 +24,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run Semgrep scan
-        uses: open-edge-platform/geti-ci/actions/semgrep@a26e113731a5bb743ab8688659f6695a17fd57be
+        uses: open-edge-platform/geti-ci/actions/semgrep@552c4673930be8ff23b8a5f57e59acf91a3cb206
         with:
           scan-scope: "changed"
           severity: "LOW"
