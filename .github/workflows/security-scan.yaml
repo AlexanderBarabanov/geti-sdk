@@ -38,7 +38,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run Zizmor scan
-        uses: open-edge-platform/geti-ci/actions/zizmor@9830a0b45060415cfda8daebbe117b0d7e95c1f7
+        uses: open-edge-platform/geti-ci/actions/zizmor@c15fa1cff9b127945d10e47481895d2fb6fc7d03
         with:
           scan-scope: ${{ github.event_name == 'pull_request' && 'changed' || 'all' }}
           severity-level: ${{ github.event_name == 'pull_request' && 'LOW' || 'LOW' }}
@@ -60,10 +60,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Run Bandit scan
-        uses: open-edge-platform/geti-ci/actions/bandit@9830a0b45060415cfda8daebbe117b0d7e95c1f7
+        uses: open-edge-platform/geti-ci/actions/bandit@c15fa1cff9b127945d10e47481895d2fb6fc7d03
         with:
           scan-scope: ${{ github.event_name == 'pull_request' && 'changed' || 'all' }}
-          severity-level: ${{ github.event_name == 'pull_request' && 'LOW' || 'LOW' }}
+          severity-level: ${{ github.event_name == 'pull_request' && 'HIGH' || 'LOW' }}
           confidence-level: ${{ github.event_name == 'pull_request' && 'LOW' || 'LOW' }}
           fail-on-findings: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
