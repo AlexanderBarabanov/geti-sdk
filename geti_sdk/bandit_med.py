@@ -3,16 +3,7 @@ More intentionally insecure code for Bandit HIGH severity testing.
 DO NOT USE IN REAL APPLICATIONS.
 """
 
-import os
-import subprocess
-import ssl
-import socket
-import ftplib
-import telnetlib
 import xml.etree.ElementTree as ET
-import hashlib
-import base64
-
 
 def insecure_xml_parsing(xml_data):
     """
