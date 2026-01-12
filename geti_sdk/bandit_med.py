@@ -4,6 +4,7 @@ DO NOT USE IN REAL APPLICATIONS.
 """
 
 import xml.etree.ElementTree as ET
+import ftplib
 
 def insecure_xml_parsing(xml_data):
     """
